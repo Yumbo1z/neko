@@ -48,7 +48,7 @@ app.listen(process.env.PORT || 80, () => {
   console.log("Server Started");
 });
 
-client.login(config.token);
+client.login(process.env.token);
 
 // ———————————————[Error Handling]———————————————
 process.on("unhandledRejection", (reason, p) => {
