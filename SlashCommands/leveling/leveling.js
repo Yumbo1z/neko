@@ -12,7 +12,7 @@ module.exports = {
     const guildID = interaction.guild.id;
 
     try {
-      const server = await serverSchema.findOne({ guildID });
+      let server = await serverSchema.findOne({ guildID });
       if (!server)
         server = await serverSchema.create({
           guildID: interaction.guild.id,
