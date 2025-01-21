@@ -28,6 +28,11 @@ const client = new Client({
 module.exports = client;
 client.slashCommands = new Collection();
 client.commands = new Collection();
+client.staff = [
+  "748597084134834186",
+  "613475285744222248",
+  "931011058078986302",
+];
 
 require("./handler")(client);
 
