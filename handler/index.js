@@ -47,13 +47,13 @@ module.exports = async (client) => {
     else arrayOfSlashCommands.push(command.data);
   });
 
-  const rest = new REST().setToken(process.env.TOKEN1);
+  const rest = new REST().setToken(process.env.token);
 
   // Set commands via the REST API
   (async () => {
     try {
       const commands = await rest.put(
-        Routes.applicationCommands("870413726711435297"),
+        Routes.applicationCommands("1327724156493762560"),
         {
           body: arrayOfSlashCommands,
         }
