@@ -1,6 +1,5 @@
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 const client = require("../index");
-const profileModel = require("./../models/profile");
 
 client.on("ready", async () => {
   let servers = client.guilds.cache.size;
@@ -11,6 +10,6 @@ client.on("ready", async () => {
   console.log(`Ping: ${client.ws.ping}`);
 
   client.user.setPresence({
-    activities: [{ name: "/help & /profile", type: 0 }],
+    activities: [{ name: "meow", type: 0 }],
   });
 });
