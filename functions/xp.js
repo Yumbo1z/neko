@@ -1,6 +1,5 @@
 const serverSchema = require("./../models/serverData");
 const xpModel = require("./../models/xp");
-const profileModel = require("./../models/profile");
 const { PermissionsBitField, EmbedBuilder } = require("discord.js");
 
 async function xp(message) {
