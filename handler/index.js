@@ -11,6 +11,7 @@ const globPromise = promisify(glob);
 module.exports = async (client) => {
   // Command handler
   const commandFiles = await globPromise(`${process.cwd()}/commands/**/*.js`); // looks for the folder named commands
+  console.log(commandFiles)
   commandFiles.map((value) => {
     const file = require(value);
     const splitted = value.split("/");
