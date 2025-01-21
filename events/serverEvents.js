@@ -1,9 +1,3 @@
-const {
-    EmbedBuilder,
-    ButtonBuilder,
-    ActionRowBuilder,
-    ChannelType,
-} = require("discord.js");
 const client = require("../index");
 const serverSchema = require("../models/serverData");
 
