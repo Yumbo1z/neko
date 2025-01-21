@@ -9,7 +9,6 @@ const globPromise = promisify(glob);
  * @param {Client} client
  */
 module.exports = async (client) => {
-  console.log("test")
   // Command handler
   const commandFiles = await globPromise(`${process.cwd()}/commands/**/*.js`); // looks for the folder named commands
   commandFiles.map((value) => {
@@ -22,6 +21,7 @@ module.exports = async (client) => {
       client.commands.set(file.name, properties);
     } //allows command
   });
+  console.log("test")
 
   // Event handler
   const eventFiles = await globPromise(`${process.cwd()}/events/*.js`); //looks for folder named events
