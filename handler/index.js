@@ -2,7 +2,6 @@ const { glob } = require("glob");
 const { promisify } = require("util");
 const { Client, SlashCommandBuilder, REST, Routes } = require("discord.js");
 const mongoose = require("mongoose");
-
 const globPromise = promisify(glob);
 
 /**
@@ -11,19 +10,16 @@ const globPromise = promisify(glob);
 module.exports = async (client) => {
   // Command handler
   const commandFiles = await globPromise(`${process.cwd()}/commands/**/*.js`); // looks for the folder named commands
-  console.log(commandFiles)
   commandFiles.map((value) => {
     const file = require(value);
     const splitted = value.split("/");
     const directory = splitted[splitted.length - 2];
-    console.log(file)
 
     if (file.name) {
       const properties = { directory, ...file };
       client.commands.set(file.name, properties);
     } //allows command
   });
-  console.log("test")
 
   // Event handler
   const eventFiles = await globPromise(`${process.cwd()}/events/*.js`); //looks for folder named events
@@ -50,13 +46,13 @@ module.exports = async (client) => {
     else arrayOfSlashCommands.push(command.data);
   });
 
-  const rest = new REST().setToken(process.env.token);
+  const rest = new REST().setToken(process.env.TOKEN1);
 
   // Set commands via the REST API
   (async () => {
     try {
       const commands = await rest.put(
-        Routes.applicationCommands("1327724156493762560"),
+        Routes.applicationCommands("870413726711435297"),
         {
           body: arrayOfSlashCommands,
         }
