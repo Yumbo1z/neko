@@ -5,10 +5,17 @@ const {
   Collection,
   Partials,
   GatewayIntentBits,
-  IntensBitField,
+  IntentsBitField,
 } = require("discord.js");
 
-const client = new Client({ intents: [IntensBitField.Flags.Guilds] });
+const client = new Client({
+  intents: [
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.GuildMembers,
+    IntentsBitField.Flags.MessageContent
+  ],
+});
 
 module.exports = client;
 client.slashCommands = new Collection();
