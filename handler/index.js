@@ -54,7 +54,7 @@ module.exports = async (client) => {
   (async () => {
     try {
       const commands = await rest.put(
-        Routes.applicationCommands("870413726711435297"),
+        Routes.applicationCommands("1327724156493762560"),
         {
           body: arrayOfSlashCommands,
         }
