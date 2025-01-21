@@ -30,15 +30,8 @@ const client = new Client({
 module.exports = client;
 client.slashCommands = new Collection();
 client.commands = new Collection();
-
-app.use(express.json());
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-
 require("./handler")(client);
+
 app.listen(process.env.PORT || 80, () => {
   console.log("Server Started");
 });
