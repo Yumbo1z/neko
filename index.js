@@ -17,12 +17,11 @@ const client = new Client({
   ],
 });
 
-require("./handler")(client);
-
 module.exports = client;
 client.slashCommands = new Collection();
 client.commands = new Collection();
 
+require("./handler")(client);
 
 app.listen(process.env.PORT || 80, () => {
   console.log("Server Started");
