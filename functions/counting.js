@@ -33,7 +33,7 @@ async function counting(message) {
         highestNumber: 0,
       });
 
-    const nextNumber = countData.lastNumber + 1;
+    const nextNumber = (countData.lastNumber || 0) + 1;
 
     if (
       Number(message.content) !== nextNumber ||
