@@ -1,4 +1,5 @@
 const { glob } = require("glob");
+// If you're using this make sure to downgrade gob to 7.2.0 or this won't work
 const { promisify } = require("util");
 const { Client, SlashCommandBuilder, REST, Routes } = require("discord.js");
 const mongoose = require("mongoose");
