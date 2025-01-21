@@ -34,11 +34,7 @@ module.exports = {
         .setStyle(5)
         .setURL("https://discord.gg/zABQqMNvNa"), // Your support server link
       new ButtonBuilder()
-        .setLabel("Vote for Bot")
-        .setStyle(5)
-        .setURL("https://top.gg/bot/870413726711435297/vote"), // Your voting link
-      new ButtonBuilder()
-        .setLabel("Website")
+        .setLabel("Super Fighters")
         .setStyle(5)
         .setURL("https://gentleman-production.up.railway.app/home") // Your website link
     );
