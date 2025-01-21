@@ -48,7 +48,7 @@ module.exports = async (client) => {
     else arrayOfSlashCommands.push(command.data);
   });
 
-  const rest = new REST().setToken(process.env.TOKEN1);
+  const rest = new REST().setToken(process.env.token);
 
   // Set commands via the REST API
   (async () => {
