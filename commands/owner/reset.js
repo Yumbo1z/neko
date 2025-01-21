@@ -21,7 +21,10 @@ module.exports = {
 
     if (!countData) return message.reply(`> Count data not found.`);
 
-    countData.lastNumber = countData.highestNumber;
+    if (Number(args[0])) {
+      countData.lastNumber = Number(args[0]);
+      countData.highestNumber = Number(args[0]);
+    } else countData.lastNumber = countData.highestNumber;
 
     await countData.save();
 
