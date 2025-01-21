@@ -2,7 +2,6 @@ const { glob } = require("glob");
 const { promisify } = require("util");
 const { Client, SlashCommandBuilder, REST, Routes } = require("discord.js");
 const mongoose = require("mongoose");
-const e = require("cors");
 
 const globPromise = promisify(glob);
 
