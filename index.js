@@ -7,7 +7,23 @@ const {
   GatewayIntentBits,
 } = require("discord.js");
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
+  ],
+  restTimeOffset: 0,
+  restRequestTimeout: 60000,
+  allowedMentions: {
+    parse: ["roles", "users"],
+    repliedUser: false,
+  },
+  partials: [Partials.Message, Partials.Reaction],
+});
 
 module.exports = client;
 client.slashCommands = new Collection();
