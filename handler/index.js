@@ -80,6 +80,6 @@ module.exports = async (client) => {
 
   mongoose.set("strictQuery", true);
   await mongoose
-    .connect(process.env["mongo"])
+    .connect(process.env.mongo)
     .then(() => console.log("Connected to mongodb"));
 };
