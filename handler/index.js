@@ -1,9 +1,14 @@
 const { glob } = require("glob");
 const { promisify } = require("util");
+const { Client, SlashCommandBuilder, REST, Routes } = require("discord.js");
 const mongoose = require("mongoose");
+const e = require("cors");
 
 const globPromise = promisify(glob);
 
+/**
+ * @param {Client} client
+ */
 module.exports = async (client) => {
   // Command handler
   const commandFiles = await globPromise(`${process.cwd()}/commands/**/*.js`); // looks for the folder named commands
@@ -19,7 +24,7 @@ module.exports = async (client) => {
   });
 
   // Event handler
-  const eventFiles = await globPromise(`${process.cwd()}/events/*.js`);
+  const eventFiles = await globPromise(`${process.cwd()}/events/*.js`); //looks for folder named events
   eventFiles.map((value) => require(value));
 
   // Slash Commands handler
@@ -32,24 +37,50 @@ module.exports = async (client) => {
     const command = require(value);
     const splitted = value.split("/");
     const directory = splitted[splitted.length - 2];
-    if (!command?.name) return;
+    if (!command?.data.name) return;
     const properties = { directory, ...command };
-    client.slashCommands.set(command.name, properties);
-    if (["MESSAGE", "USER"].includes(command.type)) delete command.description;
-    arrayOfSlashCommands.push(command);
+    client.slashCommands.set(command.data.name, properties);
+
+    //if (["MESSAGE", "USER"].includes(command.type)) delete command.description;
+
+    if (command.data instanceof SlashCommandBuilder)
+      arrayOfSlashCommands.push(command.data.toJSON());
+    else arrayOfSlashCommands.push(command.data);
   });
 
-  client.once("ready", async () => {
+  const rest = new REST().setToken(process.env.TOKEN1);
+
+  // Set commands via the REST API
+  (async () => {
+    try {
+      const commands = await rest.put(
+        Routes.applicationCommands("870413726711435297"),
+        {
+          body: arrayOfSlashCommands,
+        }
+      );
+
+      commands.map((cm) => {
+        let obj = client.slashCommands.get(cm.name);
+        if (obj) obj.id = cm.id;
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  })();
+
+  //Set commands via djs
+  /*client.on("ready", async () => {
     await client.application.commands.set(arrayOfSlashCommands).then((cmd) => {
       cmd.map((cm) => {
         let obj = client.slashCommands.get(cm.name);
         obj.id = cm.id;
       });
     });
-    console.log("Bot is ready");
-  });
+  });*/
 
   mongoose.set("strictQuery", true);
-  await mongoose.connect(process.env.mongo);
-  console.log("Connected to MongoDB");
+  await mongoose
+    .connect(process.env["mongo"])
+    .then(() => console.log("Connected to mongodb"));
 };
