@@ -48,12 +48,14 @@ module.exports = async (client) => {
   });
 
   const rest = new REST().setToken(process.env.token);
+  //const rest = new REST().setToken(client.config.token);
 
   // Set commands via the REST API
   (async () => {
     try {
       const commands = await rest.put(
         Routes.applicationCommands("1327724156493762560"),
+        //Routes.applicationCommands(client.config.ID),
         {
           body: arrayOfSlashCommands,
         }
@@ -68,17 +70,12 @@ module.exports = async (client) => {
     }
   })();
 
-  //Set commands via djs
-  /*client.on("ready", async () => {
-    await client.application.commands.set(arrayOfSlashCommands).then((cmd) => {
-      cmd.map((cm) => {
-        let obj = client.slashCommands.get(cm.name);
-        obj.id = cm.id;
-      });
-    });
-  });*/
-
   mongoose.set("strictQuery", true);
+
+  /*await mongoose
+  .connect(client.config.mongo)
+  .then(() => console.log("Connected to mongodb"));*/
+
   await mongoose
     .connect(process.env.mongo)
     .then(() => console.log("Connected to mongodb"));

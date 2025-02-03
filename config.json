@@ -1,0 +1,6 @@
+{
+  "token": "your token",
+  "prefix": "$",
+  "mongo": "your mondoDB string",
+  "ID" : "your bot id"
+}

@@ -6,6 +6,7 @@ const {
   Partials,
   GatewayIntentBits,
 } = require("discord.js");
+const config = require("./config.json");
 
 const client = new Client({
   intents: [
@@ -26,6 +27,7 @@ const client = new Client({
 });
 
 module.exports = client;
+client.config = config;
 client.slashCommands = new Collection();
 client.commands = new Collection();
 client.staff = [
@@ -40,6 +42,7 @@ app.listen(process.env.PORT || 80, () => {
   console.log("Server Started");
 });
 
+//client.login(config.token);
 client.login(process.env.token);
 
 // ———————————————[Error Handling]———————————————
