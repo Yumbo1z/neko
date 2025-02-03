@@ -11,7 +11,7 @@ const serverSchema = require("../models/serverData");
 client.on("messageCreate", async (message) => {
   if (!message.guild) return;
   if (message.channel.type === "GUILD_PUBLIC_THREAD") return;
-  const p = "$";
+  const p = client.config.prefix;
   const mentionRegex = new RegExp(`^<@!?${client.user.id}>( |)$`);
   if (message.content.match(mentionRegex)) {
     const row = new ActionRowBuilder().addComponents(
