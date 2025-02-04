@@ -4,7 +4,7 @@ const serverSchema = require("../../models/serverData");
 module.exports = {
   data: {
     name: "addlevelingrole",
-    description: "add a role to the leveling system",
+    description: "Add a role to the leveling system",
     default_member_permissions: PermissionFlagsBits.ManageRoles.toString(),
     options: [
       {

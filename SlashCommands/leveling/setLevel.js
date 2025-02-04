@@ -5,7 +5,7 @@ const xpModel = require("../../models/xp");
 module.exports = {
   data: {
     name: "setlevel",
-    description: "set level to a user",
+    description: "Set level to a user",
     default_member_permissions: PermissionFlagsBits.ManageChannels.toString(),
     options: [
       {

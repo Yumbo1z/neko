@@ -4,7 +4,7 @@ const { PermissionFlagsBits } = require("discord.js");
 module.exports = {
   data: {
     name: "setlevelingchannel",
-    description: "set the channel for leveling messages",
+    description: "Set the channel for leveling messages",
     default_member_permissions: PermissionFlagsBits.ManageChannels.toString(),
     options: [
       {

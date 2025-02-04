@@ -4,7 +4,7 @@ const { PermissionFlagsBits } = require("discord.js");
 module.exports = {
   data: {
     name: "leveling",
-    description: "toggle leveling on your server",
+    description: "Toggle leveling on your server",
     default_member_permissions: PermissionFlagsBits.ManageChannels.toString(),
     integration_types: [0],
   },
