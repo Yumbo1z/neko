@@ -20,6 +20,7 @@ module.exports = {
 
     let description = "";
 
+    //To change the directories name just change the name of the folder.
     directories.forEach((dir) => {
       const commandsInDir = client.slashCommands
         .filter((cmd) => cmd.directory === dir)
