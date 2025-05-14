@@ -1,58 +1,70 @@
-let { EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const { EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 const serverSchema = require("../../models/serverData");
 
 module.exports = {
   data: {
     name: "setstarboardinterval",
-    description: "set the starboard interval",
+    description: "Set the starboard interval (1-10)",
     default_member_permissions: PermissionFlagsBits.ManageChannels.toString(),
     options: [
       {
         name: "interval",
-        description: "the starboard interval",
-        type: 4,
+        description: "The starboard interval (1-10)",
+        type: 4, // INTEGER
         required: true,
+        min_value: 1,
+        max_value: 10,
       },
     ],
     integration_types: [0],
   },
   run: async (client, interaction, args, username) => {
-    const { options } = interaction;
-    let errorEmbed = new EmbedBuilder().setColor("Red");
+    try {
+      const interval = interaction.options.getInteger("interval");
+      const errorEmbed = new EmbedBuilder().setColor("Red");
 
-    const interval = options.getInteger("interval");
+      // This check is redundant because of min/max_value in options, but kept for safety
+      if (interval < 1 || interval > 10) {
+        return interaction.reply({
+          embeds: [
+            errorEmbed.setDescription("Interval must be between 1 and 10."),
+          ],
+          ephemeral: true,
+        });
+      }
 
-    if (interval > 10 && 0 > interval)
-      return interaction.reply({
-        embeds: [
-          errEmbed.setDescription(
-            `Interval has to be bigger than 0 and less than 10.`
-          ),
-        ],
-        ephemeral: true,
+      // Use findOneAndUpdate to both find and update in one operation
+      const server = await serverSchema.findOneAndUpdate(
+        { guildID: interaction.guild.id },
+        { $set: { "starboardSystem.interval": interval } },
+        {
+          upsert: true,
+          new: true, // Return the updated document
+          setDefaultsOnInsert: true,
+        }
+      );
+
+      const successEmbed = new EmbedBuilder()
+        .setDescription(`Successfully set starboard interval to ${interval}!`)
+        .setColor("#8c4ec4");
+
+      await interaction.reply({
+        embeds: [successEmbed],
       });
+    } catch (error) {
+      console.error("Error in setstarboardinterval command:", error);
 
-    let server = await serverSchema.findOne({
-      guildID: interaction.guild.id,
-    });
+      const errorEmbed = new EmbedBuilder()
+        .setColor("Red")
+        .setDescription(
+          "An error occurred while updating the starboard interval."
+        );
 
-    if (!server)
-      server = await serverSchema.create({
-        guildID: interaction.guild.id,
-      });
-
-    server.starboardSystem.interval = interval;
-
-    await server.save();
-
-    let embed = new EmbedBuilder()
-      .setDescription(
-        `Successfully set starboard interval to ${server.countingSystem.interval}!`
-      )
-      .setColor("#8c4ec4");
-
-    await interaction.reply({
-      embeds: [embed],
-    });
+      if (interaction.replied || interaction.deferred) {
+        await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+      } else {
+        await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+      }
+    }
   },
 };
