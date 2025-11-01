@@ -4,7 +4,7 @@ const {
   ButtonBuilder,
   PermissionsBitField,
 } = require("discord.js");
-const brModel = require("../../models/bRoles");
+const brModel = require("../../models/button-roles");
 const { disableButtons } = require("../../functions/util.js");
 const serverSchema = require("../../models/serverData");
 
