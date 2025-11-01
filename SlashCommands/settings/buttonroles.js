@@ -9,6 +9,7 @@ const { disableButtons } = require("../../functions/util.js");
 const serverSchema = require("../../models/serverData");
 
 module.exports = {
+  data: {
   name: "role-panel",
   userPerms: ["Administrator"],
   description: "Set up button roles for your server.",
@@ -103,6 +104,7 @@ module.exports = {
       ],
     },
   ],
+  },
   run: async (client, interaction, args) => {
     const { options } = interaction;
 
