@@ -105,7 +105,7 @@ module.exports = {
     },
   ],
   },
-  run: async (client, interaction, args) => {
+  run: async (client, interaction, args, username) => {
     const { options } = interaction;
 
     const SUB_COMMAND = await options.getSubcommand();
