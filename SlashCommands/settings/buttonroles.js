@@ -104,6 +104,7 @@ module.exports = {
       ],
     },
   ],
+  integration_types: [0],
   },
   run: async (client, interaction, args, username) => {
     const { options } = interaction;
