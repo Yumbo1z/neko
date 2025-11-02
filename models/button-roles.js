@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const buttonRolesSchema = new mongoose.Schema({
     guildId: { type: String, required: true },
+    panels: 
     buttons: [{
         customId: { type: String, required: true },
         roleId: { type: String, required: true },
