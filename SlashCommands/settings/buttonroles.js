@@ -124,12 +124,12 @@ module.exports = {
       if (perm !== true) return;
 
       let da = await brModel.findOne({
-        guild: interaction.guild.id,
+        guildId: interaction.guild.id,
       });
 
       if (!da) {
         da = await brModel.create({
-          guild: interaction.guild.id,
+          guildId: interaction.guild.id,
         });
         da.panels.push({ name: name, roles: [] });
         da.save();
@@ -245,7 +245,7 @@ module.exports = {
       }
 
       let da = await brModel.findOne({
-        guild: interaction.guild.id,
+        guildId: interaction.guild.id,
       });
 
       if (!da)
