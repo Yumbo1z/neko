@@ -4,18 +4,19 @@ const {
   ButtonBuilder,
   PermissionsBitField,
 } = require("discord.js");
-const brModel = require("../../models/bRoles");
+const brModel = require("../../models/button-roles");
 const { disableButtons } = require("../../functions/util.js");
 const serverSchema = require("../../models/serverData");
 
 module.exports = {
-  name: "role-panel",
+  data: {
+  name: "button-role",
   userPerms: ["Administrator"],
   description: "Set up button roles for your server.",
   options: [
     {
-      name: "create-delete",
-      description: "create or delete a role panel",
+      name: "group",
+      description: "create or delete a role group",
       type: 1,
       userPerms: ["MANAGE_GUILD"],
       options: [
@@ -30,7 +31,7 @@ module.exports = {
     },
     {
       name: "list",
-      description: "see all of the role panels in the server.",
+      description: "see all of the role groups in the server.",
       type: 1,
     },
     {
@@ -57,12 +58,18 @@ module.exports = {
           description: "color for the role. Colors: Red, Blurple, Grey, Green",
           type: 3,
           required: true,
+          choices: [
+          { name: "Blue", value: "1" },
+          { name: "Red", value: "4" },
+          { name: "Grey", value: "2" },
+          { name: "Green", value: "3" },
+        ],
         },
         {
           name: "emoji",
-          description: "emoji for the role. No custom emojis allowed ",
+          description: "emoji for the role. No custom emojis allowed. None if no emoji",
           type: 3,
-          required: true,
+          required: false,
         },
       ],
     },
@@ -103,7 +110,9 @@ module.exports = {
       ],
     },
   ],
-  run: async (client, interaction, args) => {
+  integration_types: [0],
+  },
+  run: async (client, interaction, args, username) => {
     const { options } = interaction;
 
     const SUB_COMMAND = await options.getSubcommand();
@@ -121,12 +130,12 @@ module.exports = {
       if (perm !== true) return;
 
       let da = await brModel.findOne({
-        guild: interaction.guild.id,
+        guildId: interaction.guild.id,
       });
 
       if (!da) {
         da = await brModel.create({
-          guild: interaction.guild.id,
+          guildId: interaction.guild.id,
         });
         da.panels.push({ name: name, roles: [] });
         da.save();
@@ -204,9 +213,8 @@ module.exports = {
     }
 
     if (SUB_COMMAND === "add") {
+      console.log(args)
       const panel = interaction.options.getString("panel");
-      let dc = interaction.options.getString("color");
-      let emo = interaction.options.getString("emoji");
       const role = interaction.options.getRole("role");
 
       let perms = {
@@ -222,15 +230,10 @@ module.exports = {
           ephemeral: true,
         });
 
+let emoji = null;
       let emoRegex =
         /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
-      if (
-        emo.toLowerCase() === "none" ||
-        emo.toLowerCase() === "null" ||
-        emo.toLowerCase() === "no emoji"
-      ) {
-        emo = null;
-      } else {
+      if (args[4]) {
         let test = emoRegex.test(emo);
         if (test == false) {
           return interaction.reply({
@@ -242,7 +245,7 @@ module.exports = {
       }
 
       let da = await brModel.findOne({
-        guild: interaction.guild.id,
+        guildId: interaction.guild.id,
       });
 
       if (!da)
@@ -264,6 +267,7 @@ module.exports = {
         });
 
       let index = da.panels.findIndex((v) => v.name === panel);
+const roleGroup = da.panels[index];
 
       if (!da.panels[index])
         return interaction.reply({
@@ -281,32 +285,11 @@ module.exports = {
           ephemeral: true,
         });
 
-      if (
-        dc.toLowerCase() === "none" ||
-        dc.toLowerCase() === "null" ||
-        dc.toLowerCase() === "no color"
-      ) {
-        dc = 2;
-      } else {
-        let styles = ["red", "blurple", "gray", "green"];
-        if (!styles.includes(dc.toLowerCase())) {
-          return interaction.reply({
-            content: `You did not provide a valid color enter \`none\` for a gray button`,
-            ephemeral: true,
-          });
-        } else {
-          if (dc.toLowerCase() === "red") dc = 4;
-          if (dc.toLowerCase() === "blurple") dc = 1;
-          if (dc.toLowerCase() === "gray") dc = 2;
-          if (dc.toLowerCase() === "green") dc = 3;
-        }
-      }
-
       const newRole = {
         label: role.name,
         customId: role.id,
-        style: dc,
-        emoji: emo,
+        style: args[3],
+        emoji: emoji,
       };
 
       let roleData = da.panels[index].roles.find((x) => x.label === role.name);
@@ -322,8 +305,9 @@ module.exports = {
         embeds: [
           errorEmbed
             .setDescription(
-              `**I created a new button role: ${role} | Do \`/role-panel panel\` to see the roles panel.**`
+              `A new button role has been added to role group **${roleGroup.name}\n\nDo \`/button-role panel\` to display the role(s).`
             )
+            	.addFields({ name: 'Role', value:  `${role}` })
             .setColor("Green"),
         ],
       });
@@ -341,7 +325,7 @@ module.exports = {
       if (perm !== true) return;
 
       let da = await brModel.findOne({
-        guild: interaction.guildId,
+        guildId: interaction.guildId,
       });
 
       if (!da)
@@ -393,7 +377,7 @@ module.exports = {
       const panel = interaction.options.getString("panel");
 
       let da = await brModel.findOne({
-        guild: interaction.guildId,
+        guildId: interaction.guildId,
       });
 
       if (!da)
@@ -467,7 +451,7 @@ module.exports = {
             forceStatic: true,
           })
         );
-
+console.log(rows)
       interaction.reply({ content: "panel sent.", ephemeral: true });
       interaction.channel.send({
         embeds: [panelEmbed],
