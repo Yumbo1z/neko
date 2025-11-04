@@ -10,7 +10,7 @@ const { disableButtons } = require("../../functions/util.js");
 module.exports = {
   data: {
     name: "button-role",
-    userPerms: ["ManageRoles"],
+    default_member_permissions: PermissionFlagsBits.ManageRoles.toString(),
     description: "Set up button roles for your server.",
     options: [
       {
