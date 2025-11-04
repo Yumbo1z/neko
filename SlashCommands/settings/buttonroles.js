@@ -11,14 +11,13 @@ const serverSchema = require("../../models/serverData");
 module.exports = {
   data: {
     name: "button-role",
-    userPerms: ["Administrator"],
+    userPerms: ["ManageRoles"],
     description: "Set up button roles for your server.",
     options: [
       {
-        name: "group",
-        description: "create or delete a role group",
+        name: "setup",
+        description: "Create or delete a role selection panel",
         type: 1,
-        userPerms: ["MANAGE_GUILD"],
         options: [
           {
             name: "name",
@@ -30,15 +29,9 @@ module.exports = {
         ],
       },
       {
-        name: "list",
-        description: "see all of the role groups in the server.",
-        type: 1,
-      },
-      {
         name: "add",
-        description: "Add roles to a role panel",
+        description: "Add a button role to a panel",
         type: 1,
-        userPerms: ["MANAGE_GUILD"],
         options: [
           {
             name: "panel",
@@ -77,9 +70,8 @@ module.exports = {
       },
       {
         name: "remove",
-        description: "Remove roles of a roles panel",
+        description: "Remove a role from a panel",
         type: 1,
-        userPerms: ["MANAGE_GUILD"],
         options: [
           {
             name: "panel",
@@ -98,9 +90,8 @@ module.exports = {
       },
       {
         name: "panel",
-        description: "Send the role pannel to the current channel",
+        description: "Send a role panel to this channel",
         type: 1,
-        userPerms: ["MANAGE_GUILD"],
         options: [
           {
             name: "panel",
@@ -110,6 +101,11 @@ module.exports = {
             required: true,
           },
         ],
+      },
+      {
+        name: "list",
+        description: "See all role panels in this server",
+        type: 1,
       },
     ],
     integration_types: [0],
@@ -121,15 +117,8 @@ module.exports = {
 
     let errorEmbed = new EmbedBuilder().setColor("Red");
 
-    if (SUB_COMMAND === "create-delete") {
+    if (SUB_COMMAND === "setup") {
       const name = interaction.options.getString("name");
-
-      let perms = {
-        userPerms: ["ManageRoles", "ManageChannels"],
-        botPerms: ["ManageRoles", "SendMessages", "ViewChannel", "EmbedLinks"],
-      };
-      let perm = permCheck(perms, interaction);
-      if (perm !== true) return;
 
       let da = await brModel.findOne({
         guildId: interaction.guild.id,
@@ -215,35 +204,46 @@ module.exports = {
     }
 
     if (SUB_COMMAND === "add") {
-      console.log(args);
-      const panel = interaction.options.getString("panel");
+      const panel = args[1];
       const role = interaction.options.getRole("role");
 
-      let perms = {
-        userPerms: ["Administrator"],
-        botPerms: ["ManageRoles", "SendMessages", "ViewChannel", "EmbedLinks"],
-      };
-      let perm = permCheck(perms, interaction);
-      if (perm !== true) return;
+      // Get the bot's highest role position
+      const botHighestPosition =
+        interaction.guild.members.me.roles.highest.position;
 
-      if (role.position >= interaction.guild.members.me.roles.highest.position)
+      // Get the moderator's highest role position
+      const moderatorHighestPosition =
+        interaction.member.roles.highest.position;
+
+      // Check if the role is higher than OR equal to the bot's position
+      if (role.position >= botHighestPosition) {
         return interaction.reply({
-          content: "I can't assign that role that is higher or equal to me",
+          content:
+            "I can't assign that role because it's higher than or equal to my highest role.",
           ephemeral: true,
         });
+      }
 
-      let emoji = null;
-      let emoRegex =
-        /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
+      // Check if the role is higher than the moderator's position
+      if (role.position >= moderatorHighestPosition) {
+        return interaction.reply({
+          content:
+            "You can't assign roles that are higher than or equal to your highest role.",
+          ephemeral: true,
+        });
+      }
+
+      let validEmoji = null;
       if (args[4]) {
-        let test = emoRegex.test(emo);
-        if (test == false) {
+        const emoRegex = /(\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu;
+        if (!emoRegex.test(emoji)) {
           return interaction.reply({
             content:
-              "Please specify a valid discord emoji no custom emojis allowed!",
+              "Please specify a valid Unicode emoji! Custom emojis are not allowed.",
             ephemeral: true,
           });
         }
+        validEmoji = emoji;
       }
 
       let da = await brModel.findOne({
@@ -291,7 +291,7 @@ module.exports = {
         label: role.name,
         customId: role.id,
         style: args[3],
-        emoji: emoji,
+        emoji: validEmoji,
       };
 
       let roleData = da.panels[index].roles.find((x) => x.label === role.name);
@@ -318,13 +318,6 @@ module.exports = {
     if (SUB_COMMAND === "remove") {
       const panel = interaction.options.getString("panel");
       const role = interaction.options.getRole("role");
-
-      let perms = {
-        userPerms: ["Administrator"],
-        botPerms: ["ManageRoles", "SendMessages", "ViewChannel", "EmbedLinks"],
-      };
-      let perm = permCheck(perms, interaction);
-      if (perm !== true) return;
 
       let da = await brModel.findOne({
         guildId: interaction.guildId,
@@ -406,16 +399,7 @@ module.exports = {
 
       const buttons = [];
       const rows = [];
-
       let foundPanel = da.panels[index];
-      let dex = 0;
-      const Description = foundPanel.roles
-        .map((x) => {
-          const role = interaction.guild.roles.cache.get(x.customId);
-          dex++;
-          return `${x.emoji || dex} ➔ ${role}`;
-        })
-        .join("\n");
 
       for (let i = 0; i < foundPanel.roles.length; i++) {
         const role = interaction.guild.roles.cache.find(
@@ -445,57 +429,42 @@ module.exports = {
 
       const panelEmbed = new EmbedBuilder()
         .setTitle(foundPanel.name)
-        .setDescription(
-          `**Please click on a button below to get your roles.**\n\n${Description}`
-        )
-        .setThumbnail(
-          interaction.guild.iconURL({
-            forceStatic: true,
-          })
-        );
-      console.log(rows);
+        .setDescription(`Get your roles here!`);
+
       interaction.reply({ content: "panel sent.", ephemeral: true });
       interaction.channel.send({
         embeds: [panelEmbed],
         components: rows,
       });
     }
+    if (SUB_COMMAND === "list") {
+      let da = await brModel.findOne({
+        guildId: interaction.guildId,
+      });
+
+      if (!da || da.panels.length === 0) {
+        return interaction.reply({
+          embeds: [
+            errorEmbed.setDescription(`**This server has no role panels!**`),
+          ],
+          ephemeral: true,
+        });
+      }
+
+      const panelList = da.panels
+        .map((panel) => `**${panel.name}** - ${panel.roles.length} roles`)
+        .join("\n");
+
+      const listEmbed = new EmbedBuilder()
+        .setTitle("Role Panels")
+        .setDescription(panelList)
+        .setColor("Blue")
+        .setFooter({ text: `Total panels: ${da.panels.length}` });
+
+      interaction.reply({
+        embeds: [listEmbed],
+        ephemeral: true,
+      });
+    }
   },
 };
-
-function permCheck(perms, interaction) {
-  if (!interaction.memberPermissions.has(perms.userPerms || []))
-    return interaction.reply({
-      embeds: [
-        new EmbedBuilder()
-          .setTitle("Missing Permisssion")
-          .setDescription(
-            "My apologies but you do not have the required permissions to use this command."
-          )
-          .addFields({
-            name: "**Required Permissions**",
-            value: `\`\`\`${perms.userPerms.join("\n")}\`\`\``,
-          })
-          .setColor("Red"),
-      ],
-      ephemeral: true,
-    });
-
-  if (!interaction.guild.members.me.permissions.has(perms.botPerms || []))
-    return interaction.reply({
-      embeds: [
-        new EmbedBuilder()
-          .setTitle("Missing Permisssion")
-          .setDescription(
-            "My apologies but I do not have the required permissions to run this command."
-          )
-          .addFields({
-            name: "**Required Permissions**",
-            value: `\`\`\`${perms.botPerms.join("\n")}\`\`\``,
-          })
-          .setColor("Red"),
-      ],
-      ephemeral: true,
-    });
-  return true;
-}
