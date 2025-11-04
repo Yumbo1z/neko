@@ -267,6 +267,7 @@ let emoji = null;
         });
 
       let index = da.panels.findIndex((v) => v.name === panel);
+const roleGroup = da.panels[index];
 
       if (!da.panels[index])
         return interaction.reply({
@@ -304,8 +305,9 @@ let emoji = null;
         embeds: [
           errorEmbed
             .setDescription(
-              `**I created a new button role: ${role} | Do \`/role-panel panel\` to see the roles panel.**`
+              `A new button role has been added to role group **${roleGroup.name}\n\nDo \`/button-role panel\` to display the role(s).`
             )
+            	.addFields({ name: 'Role', value:  `${role}` })
             .setColor("Green"),
         ],
       });
