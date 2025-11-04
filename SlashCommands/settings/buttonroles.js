@@ -10,107 +10,109 @@ const serverSchema = require("../../models/serverData");
 
 module.exports = {
   data: {
-  name: "button-role",
-  userPerms: ["Administrator"],
-  description: "Set up button roles for your server.",
-  options: [
-    {
-      name: "group",
-      description: "create or delete a role group",
-      type: 1,
-      userPerms: ["MANAGE_GUILD"],
-      options: [
-        {
-          name: "name",
-          description: "role panel to add or delete.",
-          required: true,
-          type: 3,
-          required: true,
-        },
-      ],
-    },
-    {
-      name: "list",
-      description: "see all of the role groups in the server.",
-      type: 1,
-    },
-    {
-      name: "add",
-      description: "Add roles to a role panel",
-      type: 1,
-      userPerms: ["MANAGE_GUILD"],
-      options: [
-        {
-          name: "panel",
-          description: "role panel to ad a role to.",
-          required: true,
-          type: 3,
-          required: true,
-        },
-        {
-          name: "role",
-          description: "role to be assigned",
-          type: 8,
-          required: true,
-        },
-        {
-          name: "color",
-          description: "color for the role. Colors: Red, Blurple, Grey, Green",
-          type: 3,
-          required: true,
-          choices: [
-          { name: "Blue", value: "1" },
-          { name: "Red", value: "4" },
-          { name: "Grey", value: "2" },
-          { name: "Green", value: "3" },
+    name: "button-role",
+    userPerms: ["Administrator"],
+    description: "Set up button roles for your server.",
+    options: [
+      {
+        name: "group",
+        description: "create or delete a role group",
+        type: 1,
+        userPerms: ["MANAGE_GUILD"],
+        options: [
+          {
+            name: "name",
+            description: "role panel to add or delete.",
+            required: true,
+            type: 3,
+            required: true,
+          },
         ],
-        },
-        {
-          name: "emoji",
-          description: "emoji for the role. No custom emojis allowed. None if no emoji",
-          type: 3,
-          required: false,
-        },
-      ],
-    },
-    {
-      name: "remove",
-      description: "Remove roles of a roles panel",
-      type: 1,
-      userPerms: ["MANAGE_GUILD"],
-      options: [
-        {
-          name: "panel",
-          description: "role panel to remove.",
-          required: true,
-          type: 3,
-          required: true,
-        },
-        {
-          name: "role",
-          description: "role to be removed",
-          type: 8,
-          required: true,
-        },
-      ],
-    },
-    {
-      name: "panel",
-      description: "Send the role pannel to the current channel",
-      type: 1,
-      userPerms: ["MANAGE_GUILD"],
-      options: [
-        {
-          name: "panel",
-          description: "role panel to show.",
-          required: true,
-          type: 3,
-          required: true,
-        },
-      ],
-    },
-  ],
-  integration_types: [0],
+      },
+      {
+        name: "list",
+        description: "see all of the role groups in the server.",
+        type: 1,
+      },
+      {
+        name: "add",
+        description: "Add roles to a role panel",
+        type: 1,
+        userPerms: ["MANAGE_GUILD"],
+        options: [
+          {
+            name: "panel",
+            description: "role panel to ad a role to.",
+            required: true,
+            type: 3,
+            required: true,
+          },
+          {
+            name: "role",
+            description: "role to be assigned",
+            type: 8,
+            required: true,
+          },
+          {
+            name: "color",
+            description:
+              "color for the role. Colors: Red, Blurple, Grey, Green",
+            type: 3,
+            required: true,
+            choices: [
+              { name: "Blue", value: "1" },
+              { name: "Red", value: "4" },
+              { name: "Grey", value: "2" },
+              { name: "Green", value: "3" },
+            ],
+          },
+          {
+            name: "emoji",
+            description:
+              "emoji for the role. No custom emojis allowed. None if no emoji",
+            type: 3,
+            required: false,
+          },
+        ],
+      },
+      {
+        name: "remove",
+        description: "Remove roles of a roles panel",
+        type: 1,
+        userPerms: ["MANAGE_GUILD"],
+        options: [
+          {
+            name: "panel",
+            description: "role panel to remove.",
+            required: true,
+            type: 3,
+            required: true,
+          },
+          {
+            name: "role",
+            description: "role to be removed",
+            type: 8,
+            required: true,
+          },
+        ],
+      },
+      {
+        name: "panel",
+        description: "Send the role pannel to the current channel",
+        type: 1,
+        userPerms: ["MANAGE_GUILD"],
+        options: [
+          {
+            name: "panel",
+            description: "role panel to show.",
+            required: true,
+            type: 3,
+            required: true,
+          },
+        ],
+      },
+    ],
+    integration_types: [0],
   },
   run: async (client, interaction, args, username) => {
     const { options } = interaction;
@@ -213,7 +215,7 @@ module.exports = {
     }
 
     if (SUB_COMMAND === "add") {
-      console.log(args)
+      console.log(args);
       const panel = interaction.options.getString("panel");
       const role = interaction.options.getRole("role");
 
@@ -230,7 +232,7 @@ module.exports = {
           ephemeral: true,
         });
 
-let emoji = null;
+      let emoji = null;
       let emoRegex =
         /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
       if (args[4]) {
@@ -267,7 +269,7 @@ let emoji = null;
         });
 
       let index = da.panels.findIndex((v) => v.name === panel);
-const roleGroup = da.panels[index];
+      const roleGroup = da.panels[index];
 
       if (!da.panels[index])
         return interaction.reply({
@@ -307,7 +309,7 @@ const roleGroup = da.panels[index];
             .setDescription(
               `A new button role has been added to role group **${roleGroup.name}\n\nDo \`/button-role panel\` to display the role(s).`
             )
-            	.addFields({ name: 'Role', value:  `${role}` })
+            .addFields({ name: "Role", value: `${role}` })
             .setColor("Green"),
         ],
       });
@@ -451,7 +453,7 @@ const roleGroup = da.panels[index];
             forceStatic: true,
           })
         );
-console.log(rows)
+      console.log(rows);
       interaction.reply({ content: "panel sent.", ephemeral: true });
       interaction.channel.send({
         embeds: [panelEmbed],
