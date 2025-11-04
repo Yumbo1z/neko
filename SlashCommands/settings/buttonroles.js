@@ -2,7 +2,7 @@ const {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  PermissionsBitField,
+  PermissionFlagsBits,
 } = require("discord.js");
 const brModel = require("../../models/button-roles");
 const { disableButtons } = require("../../functions/util.js");
