@@ -344,7 +344,7 @@ module.exports = {
       if (perm !== true) return;
 
       let da = await brModel.findOne({
-        guild: interaction.guildId,
+        guildId: interaction.guildId,
       });
 
       if (!da)
@@ -396,7 +396,7 @@ module.exports = {
       const panel = interaction.options.getString("panel");
 
       let da = await brModel.findOne({
-        guild: interaction.guildId,
+        guildId: interaction.guildId,
       });
 
       if (!da)
