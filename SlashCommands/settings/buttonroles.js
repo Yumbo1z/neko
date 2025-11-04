@@ -57,13 +57,13 @@ module.exports = {
           name: "color",
           description: "color for the role. Colors: Red, Blurple, Grey, Green",
           type: 3,
-          required: true,
+          required: false,
         },
         {
           name: "emoji",
-          description: "emoji for the role. No custom emojis allowed ",
+          description: "emoji for the role. No custom emojis allowed. None if no emoji",
           type: 3,
-          required: true,
+          required: false,
         },
       ],
     },
@@ -207,6 +207,7 @@ module.exports = {
     }
 
     if (SUB_COMMAND === "add") {
+      console.log(args)
       const panel = interaction.options.getString("panel");
       let dc = interaction.options.getString("color");
       let emo = interaction.options.getString("emoji");
