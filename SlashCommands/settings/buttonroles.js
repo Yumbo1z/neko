@@ -436,24 +436,26 @@ module.exports = {
           (r) => r.id === foundPanel.roles[i].customId
         );
 
-        let obj = {
-          label: role.name,
-          emoji: foundPanel.roles[i].emoji,
-          style: foundPanel.roles[i].style,
-          custom_id: `brole${foundPanel.roles[i].customId}`,
-          disabled: false,
-          type: 2,
-        };
-        buttons.push(obj);
+        const button = new ButtonBuilder()
+          .setLabel(role.name)
+          .setStyle(foundPanel.roles[i].style)
+          .setCustomId(`brole${foundPanel.roles[i].customId}`)
+          .setDisabled(false);
+
+        if (foundPanel.roles[i].emoji) {
+          button.setEmoji(foundPanel.roles[i].emoji);
+        }
+
+        buttons.push(button);
       }
 
-      for (let i = 0; i < Math.ceil(foundPanel.roles.length / 5); i++) {
-        rows.push(new ActionRowBuilder());
+      // Create action rows and add buttons
+      for (let i = 0; i < Math.ceil(buttons.length / 5); i++) {
+        const row = new ActionRowBuilder();
+        const buttonSlice = buttons.slice(i * 5, (i + 1) * 5);
+        row.addComponents(buttonSlice);
+        rows.push(row);
       }
-
-      rows.forEach((row, i) => {
-        row.addComponents(buttons.slice(0 + i * 5, 5 + i * 5));
-      });
 
       const panelEmbed = new EmbedBuilder()
         .setTitle(foundPanel.name)
