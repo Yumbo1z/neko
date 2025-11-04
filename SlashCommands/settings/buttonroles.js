@@ -449,7 +449,7 @@ const roleGroup = da.panels[index];
             forceStatic: true,
           })
         );
-
+console.log(rows)
       interaction.reply({ content: "panel sent.", ephemeral: true });
       interaction.channel.send({
         embeds: [panelEmbed],
