@@ -10,13 +10,13 @@ const serverSchema = require("../../models/serverData");
 
 module.exports = {
   data: {
-  name: "role-panel",
+  name: "button-role",
   userPerms: ["Administrator"],
   description: "Set up button roles for your server.",
   options: [
     {
-      name: "create-delete",
-      description: "create or delete a role panel",
+      name: "group",
+      description: "create or delete a role group",
       type: 1,
       userPerms: ["MANAGE_GUILD"],
       options: [
@@ -31,7 +31,7 @@ module.exports = {
     },
     {
       name: "list",
-      description: "see all of the role panels in the server.",
+      description: "see all of the role groups in the server.",
       type: 1,
     },
     {
@@ -57,7 +57,13 @@ module.exports = {
           name: "color",
           description: "color for the role. Colors: Red, Blurple, Grey, Green",
           type: 3,
-          required: false,
+          required: true,
+          choices: [
+          { name: "Blue", value: "1" },
+          { name: "Red", value: "4" },
+          { name: "Grey", value: "2" },
+          { name: "Green", value: "3" },
+        ],
         },
         {
           name: "emoji",
@@ -209,8 +215,6 @@ module.exports = {
     if (SUB_COMMAND === "add") {
       console.log(args)
       const panel = interaction.options.getString("panel");
-      let dc = interaction.options.getString("color");
-      let emo = interaction.options.getString("emoji");
       const role = interaction.options.getRole("role");
 
       let perms = {
@@ -226,15 +230,10 @@ module.exports = {
           ephemeral: true,
         });
 
+let emoji = null;
       let emoRegex =
         /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
-      if (
-        emo.toLowerCase() === "none" ||
-        emo.toLowerCase() === "null" ||
-        emo.toLowerCase() === "no emoji"
-      ) {
-        emo = null;
-      } else {
+      if (args[4]) {
         let test = emoRegex.test(emo);
         if (test == false) {
           return interaction.reply({
@@ -285,32 +284,11 @@ module.exports = {
           ephemeral: true,
         });
 
-      if (
-        dc.toLowerCase() === "none" ||
-        dc.toLowerCase() === "null" ||
-        dc.toLowerCase() === "no color"
-      ) {
-        dc = 2;
-      } else {
-        let styles = ["red", "blurple", "gray", "green"];
-        if (!styles.includes(dc.toLowerCase())) {
-          return interaction.reply({
-            content: `You did not provide a valid color enter \`none\` for a gray button`,
-            ephemeral: true,
-          });
-        } else {
-          if (dc.toLowerCase() === "red") dc = 4;
-          if (dc.toLowerCase() === "blurple") dc = 1;
-          if (dc.toLowerCase() === "gray") dc = 2;
-          if (dc.toLowerCase() === "green") dc = 3;
-        }
-      }
-
       const newRole = {
         label: role.name,
         customId: role.id,
-        style: dc,
-        emoji: emo,
+        style: args[3],
+        emoji: emoji,
       };
 
       let roleData = da.panels[index].roles.find((x) => x.label === role.name);
