@@ -8,6 +8,7 @@ const collabsSchema = require("../../models/collabs.js");
 const { isWhole, isInteger } = require("../../functions/util.js");
 let ms = require("ms");
 const crypto = require("crypto");
+const { channel } = require("diagnostics_channel");
 
 module.exports = {
   data: {
@@ -62,12 +63,12 @@ module.exports = {
       },
       {
         name: "join",
-        description: "Send a role panel to this channel",
+        description: "Join a collab session",
         type: 1,
         options: [
           {
-            name: "collab id",
-            description: "role panel to show.",
+            name: "collab-id",
+            description: "The ID of the collab to join",
             required: true,
             type: 3,
           },
@@ -122,10 +123,49 @@ module.exports = {
         maxGuests,
         startsAt: date,
         hostId: interaction.user.id,
+        channelId: interaction.channel.id,
+        guildId: interaction.guild.id,
+        guests: [interaction.user.id],
       });
 
       await interaction.reply(
         `Congrats! Your collab has been created with ID: **${collabId}**. Guests use this ID to join!`
+      );
+    }
+    if (SUB_COMMAND === "join") {
+      const collabId = interaction.options.getString("collab-id");
+      let collab = await collabsSchema.findOne({
+        guildId: interaction.guild.id,
+      });
+      if (!collab)
+        return interaction.reply({
+          embeds: [errorEmbed.setDescription(`Collab not found!`)],
+          ephemeral: true,
+        });
+
+      if (collab.guests.includes(interaction.user.id)) {
+        return interaction.reply({
+          embeds: [
+            errorEmbed.setDescription(
+              `You have already joined this collab! If you want to leave us /collab leave <collab id>`
+            ),
+          ],
+          ephemeral: true,
+        });
+      }
+
+      if (collab.guests.length >= collab.maxGuests) {
+        return interaction.reply({
+          embeds: [errorEmbed.setDescription(`This collab is already full!`)],
+          ephemeral: true,
+        });
+      }
+
+      collab.guests.push(interaction.user.id);
+      await collab.save();
+
+      return interaction.reply(
+        `You have successfully joined the collab with ID: **${collabId}** We will remind you a day and hour before collab starts!`
       );
     }
   },
