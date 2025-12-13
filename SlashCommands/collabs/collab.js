@@ -134,7 +134,7 @@ module.exports = {
         });
 
       let maxGuests = Number(i3);
-      const collabId = crypto.randomBytes(4).toString("hex");
+      const collabId = crypto.randomBytes(32).toString("hex");
 
       await collabsSchema.create({
         collabId,
