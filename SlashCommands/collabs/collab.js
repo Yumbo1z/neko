@@ -136,7 +136,7 @@ module.exports = {
       let maxGuests = Number(i3);
       const collabId = crypto.randomBytes(4).toString("hex");
 
-      await giveawaySchema.create({
+      await collabsSchema.create({
         collabId,
         maxGuests,
         startsAt: date,
