@@ -7,6 +7,7 @@ const {
 const collabsSchema = require("../../models/collabs.js");
 const { isWhole, isInteger } = require("../../functions/util.js");
 let ms = require("ms");
+const crypto = require("crypto");
 
 module.exports = {
   data: {
@@ -15,19 +16,19 @@ module.exports = {
     options: [
       {
         name: "start",
-        description: "Create or delete a role selection panel",
+        description: "Start a new collab session",
         type: 1,
         options: [
           {
-            name: "starts in",
+            name: "starts-in",
             description:
-              "how long should the giveaway last? Example: 5h, 2 days, 30m",
+              "When should the collab start? Example: 5h, 2 days, 30m",
             type: 3,
             required: true,
           },
           {
-            name: "max guests",
-            description: "how many guest can join?",
+            name: "max-guests",
+            description: "Maximum number of guests allowed in the collab",
             type: 4,
             required: true,
           },
@@ -35,7 +36,7 @@ module.exports = {
       },
       {
         name: "end",
-        description: "Add a button role to a panel",
+        description: "End a collab session",
         type: 1,
         options: [
           {
@@ -88,6 +89,44 @@ module.exports = {
     let errorEmbed = new EmbedBuilder().setColor("Red");
 
     if (SUB_COMMAND === "start") {
+      const i2 = interaction.options.getString("starts-in");
+      const i3 = interaction.options.getInteger("max-guests");
+
+      let time = ms(i2);
+      if (!time || time == undefined)
+        return interaction.reply({
+          embeds: [errorEmbed.setDescription(`Please specify a valid time!`)],
+          ephemeral: true,
+        });
+
+      let duration = Math.floor(time / 1000);
+      let date = new Date(new Date().getTime() + time);
+
+      if (!isWhole(i3))
+        return interaction.reply({
+          embeds: [errorEmbed.setDescription(`**Not a valid number!**`)],
+          ephemeral: true,
+        });
+
+      if (!isInteger(i3))
+        return interaction.reply({
+          embeds: [errorEmbed.setDescription(`**Not a valid number!**`)],
+          ephemeral: true,
+        });
+
+      let maxGuests = Number(i3);
+      const collabId = crypto.randomBytes(4).toString("hex");
+
+      let collab = await giveawaySchema.create({
+        collabId,
+        maxGuests,
+        startsAt: date,
+        hostId: interaction.user.id,
+      });
+
+      await interaction.reply(
+        `Congrats! Your collab has been created with ID: **${collabId}**. Guests use this ID to join!`
+      );
     }
   },
 };

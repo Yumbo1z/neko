@@ -4,10 +4,11 @@ const collabsSchema = new mongoose.Schema({
   guildId: { type: String, required: true },
   collabs: [
     {
-      id: { type: String },
+      collabId: { type: String },
       maxGuests: { type: Number },
       guests: { type: Array },
-      endsAt: { type: Date },
+      startsAt: { type: Date },
+      hostId: { type: String },
     },
   ],
 });
