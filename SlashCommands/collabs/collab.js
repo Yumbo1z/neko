@@ -136,7 +136,7 @@ module.exports = {
       let maxGuests = Number(i3);
       const collabId = crypto.randomBytes(4).toString("hex");
 
-      let collab = await giveawaySchema.create({
+      await giveawaySchema.create({
         collabId,
         maxGuests,
         startsAt: date,
@@ -254,6 +254,64 @@ module.exports = {
       return interaction.reply(
         `You have successfully left the collab with ID: **${collabId}**`
       );
+    }
+    if (SUB_COMMAND === "end") {
+      const collabId = interaction.options.getString("collab-id");
+      let collab = await collabsSchema.findOne({
+        collabId,
+        guildId: interaction.guild.id,
+      });
+      if (!collab)
+        return interaction.reply({
+          embeds: [errorEmbed.setDescription(`Collab not found!`)],
+          ephemeral: true,
+        });
+      if (collab.hostId !== interaction.user.id) {
+        return interaction.reply({
+          embeds: [
+            errorEmbed.setDescription(`Only the host can end this collab!`),
+          ],
+          ephemeral: true,
+        });
+      }
+      await collabsSchema.deleteOne({
+        collabId,
+        guildId: interaction.guild.id,
+      });
+      return interaction.reply(
+        `The collab with ID: **${collabId}** has been successfully ended.`
+      );
+    }
+    if (SUB_COMMAND === "involved-in") {
+      let collabs = await collabsSchema.find({
+        guildId: interaction.guild.id,
+        guests: interaction.user.id,
+      });
+      if (!collabs || collabs.length === 0) {
+        return interaction.reply({
+          embeds: [
+            errorEmbed.setDescription(
+              `You are not involved in any collabs in this server!`
+            ),
+          ],
+          ephemeral: true,
+        });
+      }
+      let collabList = collabs
+        .map(
+          (c) =>
+            `**Collab ID:** ${c.collabId} | **Host:** <@${
+              c.hostId
+            }> | **Guests:** ${c.guests.length}/${
+              c.maxGuests
+            } | **Starts At:** <t:${Math.floor(c.startsAt.getTime() / 1000)}:F>`
+        )
+        .join("\n");
+      let listEmbed = new EmbedBuilder()
+        .setTitle("Collab Sessions You Are Involved In")
+        .setDescription(collabList)
+        .setColor("Blue");
+      return interaction.reply({ embeds: [listEmbed] });
     }
   },
 };
