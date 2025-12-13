@@ -81,15 +81,15 @@ module.exports = {
         options: [
           {
             name: "collab-id",
-            description: "The ID of the collab to join",
+            description: "The ID of the collab to view",
             required: true,
             type: 3,
           },
         ],
       },
       {
-        name: "list-personal",
-        description: "List all your collab sessions",
+        name: "involved-in",
+        description: "List all collab sessions you are involved in",
         type: 1,
       },
       {
@@ -187,24 +187,73 @@ module.exports = {
       );
     }
     if (SUB_COMMAND === "list") {
-        let collabs = await collabsSchema.find({ guildId: interaction.guild.id });
-        if (!collabs || collabs.length === 0) {
-          return interaction.reply({
-            embeds: [errorEmbed.setDescription(`There are no collabs in this server!`)],
-            ephemeral: true,
-          });
-        }
-        let collabList = collabs
-          .map(
-            (c) =>
-              `**Collab ID:** ${c.collabId} | **Host:** <@${c.hostId}> | **Guests:** ${c.guests.length}/${c.maxGuests} | **Starts At:** <t:${Math.floor(c.startsAt.getTime() / 1000)}:F>`
-          )
-          .join("\n");
-        let listEmbed = new EmbedBuilder()
-          .setTitle("Collab Sessions in This Server")
-          .setDescription(collabList)
-          .setColor("Blue");
-        return interaction.reply({ embeds: [listEmbed] });
+      let collabs = await collabsSchema.find({ guildId: interaction.guild.id });
+      if (!collabs || collabs.length === 0) {
+        return interaction.reply({
+          embeds: [
+            errorEmbed.setDescription(`There are no collabs in this server!`),
+          ],
+          ephemeral: true,
+        });
+      }
+      let collabList = collabs
+        .map(
+          (c) =>
+            `**Collab ID:** ${c.collabId} | **Host:** <@${
+              c.hostId
+            }> | **Guests:** ${c.guests.length}/${
+              c.maxGuests
+            } | **Starts At:** <t:${Math.floor(c.startsAt.getTime() / 1000)}:F>`
+        )
+        .join("\n");
+      let listEmbed = new EmbedBuilder()
+        .setTitle("Collab Sessions in This Server")
+        .setDescription(collabList)
+        .setColor("Blue");
+      return interaction.reply({ embeds: [listEmbed] });
+    }
+    if (SUB_COMMAND === "joined") {
+      const collabId = interaction.options.getString("collab-id");
+      let collab = await collabsSchema.findOne({
+        collabId,
+        guildId: interaction.guild.id,
+      });
+      if (!collab)
+        return interaction.reply({
+          embeds: [errorEmbed.setDescription(`Collab not found!`)],
+          ephemeral: true,
+        });
+      let guestList = collab.guests.map((g) => `<@${g}>`).join("\n");
+      let joinedEmbed = new EmbedBuilder()
+        .setTitle(`Guests in Collab ID: ${collabId}`)
+        .setDescription(guestList)
+        .setColor("Green");
+      return interaction.reply({ embeds: [joinedEmbed] });
+    }
+    if (SUB_COMMAND === "leave") {
+      const collabId = interaction.options.getString("collab-id");
+      let collab = await collabsSchema.findOne({
+        collabId,
+        guildId: interaction.guild.id,
+      });
+      if (!collab)
+        return interaction.reply({
+          embeds: [errorEmbed.setDescription(`Collab not found!`)],
+          ephemeral: true,
+        });
+      if (!collab.guests.includes(interaction.user.id)) {
+        return interaction.reply({
+          embeds: [
+            errorEmbed.setDescription(`You are not part of this collab!`),
+          ],
+          ephemeral: true,
+        });
+      }
+      collab.guests = collab.guests.filter((g) => g !== interaction.user.id);
+      await collab.save();
+      return interaction.reply(
+        `You have successfully left the collab with ID: **${collabId}**`
+      );
     }
   },
 };
