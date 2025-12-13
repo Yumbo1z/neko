@@ -41,8 +41,8 @@ module.exports = {
         type: 1,
         options: [
           {
-            name: "collab id",
-            description: "role panel to ad a role to.",
+            name: "collab-id",
+            description: "The ID of the collab to join",
             required: true,
             type: 3,
           },
@@ -54,8 +54,8 @@ module.exports = {
         type: 1,
         options: [
           {
-            name: "collab id",
-            description: "role panel to remove.",
+            name: "collab-id",
+            description: "The ID of the collab to join",
             required: true,
             type: 3,
           },
@@ -75,8 +75,26 @@ module.exports = {
         ],
       },
       {
-        name: "check-availability",
-        description: "See all role panels in this server",
+        name: "joined",
+        description: "View the guests of a collab session",
+        type: 1,
+        options: [
+          {
+            name: "collab-id",
+            description: "The ID of the collab to join",
+            required: true,
+            type: 3,
+          },
+        ],
+      },
+      {
+        name: "list-personal",
+        description: "List all your collab sessions",
+        type: 1,
+      },
+      {
+        name: "list",
+        description: "List all collab sessions in this server",
         type: 1,
       },
     ],
@@ -167,6 +185,26 @@ module.exports = {
       return interaction.reply(
         `You have successfully joined the collab with ID: **${collabId}** We will remind you a day and hour before collab starts!`
       );
+    }
+    if (SUB_COMMAND === "list") {
+        let collabs = await collabsSchema.find({ guildId: interaction.guild.id });
+        if (!collabs || collabs.length === 0) {
+          return interaction.reply({
+            embeds: [errorEmbed.setDescription(`There are no collabs in this server!`)],
+            ephemeral: true,
+          });
+        }
+        let collabList = collabs
+          .map(
+            (c) =>
+              `**Collab ID:** ${c.collabId} | **Host:** <@${c.hostId}> | **Guests:** ${c.guests.length}/${c.maxGuests} | **Starts At:** <t:${Math.floor(c.startsAt.getTime() / 1000)}:F>`
+          )
+          .join("\n");
+        let listEmbed = new EmbedBuilder()
+          .setTitle("Collab Sessions in This Server")
+          .setDescription(collabList)
+          .setColor("Blue");
+        return interaction.reply({ embeds: [listEmbed] });
     }
   },
 };
