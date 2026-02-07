@@ -205,6 +205,7 @@ module.exports = {
     if (SUB_COMMAND === "add") {
       const panel = args[1];
       const role = interaction.options.getRole("role");
+      const emoji = interaction.options.getString("emoji");
 
       // Get the bot's highest role position
       const botHighestPosition =
