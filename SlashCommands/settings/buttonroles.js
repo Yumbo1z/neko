@@ -77,6 +77,7 @@ module.exports = {
             description: "role panel to remove.",
             required: true,
             type: 3,
+            choices: [], // autocomplete not working for some reason
             required: true,
           },
           {
