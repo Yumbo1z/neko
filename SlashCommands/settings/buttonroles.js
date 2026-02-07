@@ -95,9 +95,9 @@ module.exports = {
           {
             name: "panel",
             description: "role panel to show.",
-            required: true,
             type: 3,
             required: true,
+            autocomplete: true,
           },
         ],
       },
@@ -475,7 +475,7 @@ module.exports = {
         sub = interaction.options.getSubcommand();
       } catch (e) {}
 
-      if (sub !== "add" && sub !== "remove") return interaction.respond([]);
+      if (sub !== "add" && sub !== "remove" && sub !== "panel") return interaction.respond([]);
 
       const da = await brModel.findOne({ guildId: interaction.guild.id });
       if (!da || !da.panels || da.panels.length === 0)
