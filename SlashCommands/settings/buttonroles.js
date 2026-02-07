@@ -75,10 +75,9 @@ module.exports = {
           {
             name: "panel",
             description: "role panel to remove.",
-            required: true,
             type: 3,
-            choices: [], // autocomplete not working for some reason
             required: true,
+            autocomplete: true,
           },
           {
             name: "role",
@@ -476,7 +475,7 @@ module.exports = {
         sub = interaction.options.getSubcommand();
       } catch (e) {}
 
-      if (sub !== "add") return interaction.respond([]);
+      if (sub !== "add" && sub !== "remove") return interaction.respond([]);
 
       const da = await brModel.findOne({ guildId: interaction.guild.id });
       if (!da || !da.panels || da.panels.length === 0)
