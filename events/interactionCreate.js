@@ -6,6 +6,16 @@ const { EmbedBuilder } = require("discord.js");
 
 
 client.on("interactionCreate", async (interaction) => {
+  if (interaction.isAutocomplete()) {
+    const cmd = client.slashCommands.get(interaction.commandName);
+    if (!cmd || !cmd.autocomplete) return;
+    try {
+      await cmd.autocomplete(client, interaction);
+    } catch (err) {
+      console.error(err);
+    }
+    return;
+  }
   if (interaction.isCommand()) {
     const cmd = client.slashCommands.get(interaction.commandName);
     if (!cmd)

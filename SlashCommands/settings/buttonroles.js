@@ -35,9 +35,9 @@ module.exports = {
           {
             name: "panel",
             description: "role panel to ad a role to.",
-            required: true,
             type: 3,
             required: true,
+            autocomplete: true,
           },
           {
             name: "role",
@@ -135,13 +135,13 @@ module.exports = {
       if (da.panels.find((v) => v.name === name)) {
         let buttons = new ActionRowBuilder().addComponents(
           new ButtonBuilder().setCustomId("yes").setLabel("Accept").setStyle(3),
-          new ButtonBuilder().setCustomId("no").setLabel("Decline").setStyle(4)
+          new ButtonBuilder().setCustomId("no").setLabel("Decline").setStyle(4),
         );
 
         let confirm = await interaction.reply({
           embeds: [
             errorEmbed.setDescription(
-              "**I can't assign that panel because it already exists, do you want me to delete it?**"
+              "**I can't assign that panel because it already exists, do you want me to delete it?**",
             ),
           ],
           components: [buttons],
@@ -163,7 +163,7 @@ module.exports = {
               .update({
                 embeds: [
                   errorEmbed.setDescription(
-                    "**I will not delete the panel then.**"
+                    "**I will not delete the panel then.**",
                   ),
                 ],
                 components: disableButtons(confirm.components),
@@ -261,7 +261,7 @@ module.exports = {
         return interaction.reply({
           embeds: [
             errorEmbed.setDescription(
-              `**This server has reached the max ammount of role panels \`5\`**`
+              `**This server has reached the max ammount of role panels \`5\`**`,
             ),
           ],
           ephemeral: true,
@@ -280,7 +280,7 @@ module.exports = {
         return interaction.reply({
           embeds: [
             errorEmbed.setDescription(
-              `**This panel has reached the max ammount of roles \`15\`**`
+              `**This panel has reached the max ammount of roles \`15\`**`,
             ),
           ],
           ephemeral: true,
@@ -306,7 +306,7 @@ module.exports = {
         embeds: [
           errorEmbed
             .setDescription(
-              `A new button role has been added to role group **${roleGroup.name}\n\nDo \`/button-role panel\` to display the role(s).`
+              `A new button role has been added to role group **${roleGroup.name}\n\nDo \`/button-role panel\` to display the role(s).`,
             )
             .addFields({ name: "Role", value: `${role}` })
             .setColor("Green"),
@@ -360,7 +360,7 @@ module.exports = {
         embeds: [
           errorEmbed
             .setDescription(
-              `**Removed button role: ${role} | Do \`/role-panel panel\` to see the button roles panel**`
+              `**Removed button role: ${role} | Do \`/role-panel panel\` to see the button roles panel**`,
             )
             .setColor("Green"),
         ],
@@ -402,7 +402,7 @@ module.exports = {
 
       for (let i = 0; i < foundPanel.roles.length; i++) {
         const role = interaction.guild.roles.cache.find(
-          (r) => r.id === foundPanel.roles[i].customId
+          (r) => r.id === foundPanel.roles[i].customId,
         );
 
         const button = new ButtonBuilder()
@@ -464,6 +464,34 @@ module.exports = {
         embeds: [listEmbed],
         ephemeral: true,
       });
+    }
+  },
+
+  autocomplete: async (client, interaction) => {
+    try {
+      const focused = interaction.options.getFocused();
+      let sub = null;
+      try {
+        sub = interaction.options.getSubcommand();
+      } catch (e) {}
+
+      if (sub !== "add") return interaction.respond([]);
+
+      const da = await brModel.findOne({ guildId: interaction.guild.id });
+      if (!da || !da.panels || da.panels.length === 0)
+        return interaction.respond([]);
+
+      const choices = da.panels
+        .map((p) => ({ name: p.name, value: p.name }))
+        .filter((c) =>
+          String(c.name).toLowerCase().includes(String(focused).toLowerCase()),
+        )
+        .slice(0, 25);
+
+      return interaction.respond(choices);
+    } catch (err) {
+      console.error(err);
+      return interaction.respond([]);
     }
   },
 };
