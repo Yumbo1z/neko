@@ -88,6 +88,20 @@ const {
               content: `Ticket created at ${channel}`,
               ephemeral: true,
             });
+          })
+          .catch((error) => {
+            if (error.code === 50013) { // Missing Permissions error code
+              interaction.reply({
+                content: `I don't have permission to send messages in the ticket channel. Please contact the admins to give me the necessary permissions.`,
+                ephemeral: true,
+              });
+            } else {
+              console.error('Error sending ticket message:', error);
+              interaction.reply({
+                content: `An error occurred while creating the ticket. Please try again or contact the admins.`,
+                ephemeral: true,
+              });
+            }
           });
       }
   
