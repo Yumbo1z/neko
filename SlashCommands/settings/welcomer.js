@@ -9,44 +9,49 @@ const { disableButtons } = require("../../functions");
 let ms = require("ms");
 
 module.exports = {
-  name: "welcomer",
-  description: "Configure welcomer in your server.",
-  default_member_permissions: PermissionFlagsBits.ManageChannels,
-  botPerms: ["ManageChannels"],
-  options: [
-    {
-      name: "type",
-      description: "Which welcomer to configure.",
-      type: 3,
-      choices: [
-        { name: "Hello (sent when member joins the server", value: "hello" },
-        { name: "Goodbye (sent when member leaves the server", value: "leave" },
-      ],
-      required: true,
-    },
-    {
-      name: "channel",
-      description: "Specify the channel to setup for the chosen type.",
-      type: 7, // Channel type
-      channelTypes: [0, 5],
-      required: true,
-    },
-    {
-      name: "message",
-      description:
-        "Message for the chosen type. {user} {username} {server} {members} {nobots}",
-      type: 3,
-      minLength: 1,
-      maxLength: 1000,
-      required: true,
-    },
-    {
-      name: "delete_reply",
-      description: "Delete the reply after a certain time.",
-      type: 3,
-      required: false,
-    },
-  ],
+  data: {
+    name: "welcomer",
+    description: "Configure welcomer in your server.",
+    default_member_permissions: PermissionFlagsBits.ManageChannels,
+    botPerms: ["ManageChannels"],
+    options: [
+      {
+        name: "type",
+        description: "Which welcomer to configure.",
+        type: 3,
+        choices: [
+          { name: "Hello (sent when member joins the server", value: "hello" },
+          {
+            name: "Goodbye (sent when member leaves the server",
+            value: "leave",
+          },
+        ],
+        required: true,
+      },
+      {
+        name: "channel",
+        description: "Specify the channel to setup for the chosen type.",
+        type: 7, // Channel type
+        channelTypes: [0, 5],
+        required: true,
+      },
+      {
+        name: "message",
+        description:
+          "Message for the chosen type. {user} {username} {server} {members} {nobots}",
+        type: 3,
+        minLength: 1,
+        maxLength: 1000,
+        required: true,
+      },
+      {
+        name: "delete_reply",
+        description: "Delete the reply after a certain time.",
+        type: 3,
+        required: false,
+      },
+    ],
+  },
   run: async (client, interaction, args) => {
     const { options } = interaction;
     const type = options.getString("type");
