@@ -5,26 +5,28 @@ const {
 } = require("discord.js");
 
 module.exports = {
-  name: "purge",
-  default_member_permissions: PermissionFlagsBits.ManageMessages,
-  //dm_permission: false,
-  botPerms: ["ManageMessages"],
-  description: "Delete a number of messages from a user or channel.",
-  options: [
-    {
-      name: "amount",
-      description:
-        "The amount of messages you want to delete from the channel.",
-      type: 4,
-      required: true,
-    },
-    {
-      name: "user",
-      description: "The user you want to purge.",
-      type: 6,
-      required: false,
-    },
-  ],
+  data: {
+    name: "purge",
+    default_member_permissions: PermissionFlagsBits.ManageMessages,
+    //dm_permission: false,
+    botPerms: ["ManageMessages"],
+    description: "Delete a number of messages from a user or channel.",
+    options: [
+      {
+        name: "amount",
+        description:
+          "The amount of messages you want to delete from the channel.",
+        type: 4,
+        required: true,
+      },
+      {
+        name: "user",
+        description: "The user you want to purge.",
+        type: 6,
+        required: false,
+      },
+    ],
+  },
   run: async (client, interaction, args) => {
     let errorEmbed = new EmbedBuilder().setColor("Red");
 
@@ -35,7 +37,7 @@ module.exports = {
       return interaction.reply({
         embeds: [
           errorEmbed.setDescription(
-            `${client.error} I cannot purge more than 100 messages.`
+            `${client.error} I cannot purge more than 100 messages.`,
           ),
         ],
         ephemeral: true,
@@ -45,7 +47,7 @@ module.exports = {
       return interaction.reply({
         embeds: [
           errorEmbed.setDescription(
-            `${client.error} I cannot purge less than 0 messages.`
+            `${client.error} I cannot purge less than 0 messages.`,
           ),
         ],
         ephemeral: true,
@@ -61,7 +63,7 @@ module.exports = {
       return interaction.reply({
         embeds: [
           errorEmbed.setDescription(
-            `${client.error} I do not have perms to view this channel.`
+            `${client.error} I do not have perms to view this channel.`,
           ),
         ],
         ephemeral: true,
@@ -76,7 +78,7 @@ module.exports = {
       return interaction.reply({
         embeds: [
           errorEmbed.setDescription(
-            `${client.error} I do not have perms to manage messages in this channel.`
+            `${client.error} I do not have perms to manage messages in this channel.`,
           ),
         ],
         ephemeral: true,
@@ -91,7 +93,7 @@ module.exports = {
       return interaction.reply({
         embeds: [
           errorEmbed.setDescription(
-            `${client.error} I do not have perms to read message history in that channel.`
+            `${client.error} I do not have perms to read message history in that channel.`,
           ),
         ],
         ephemeral: true,
@@ -109,7 +111,7 @@ module.exports = {
         return interaction.reply({
           embeds: [
             errorEmbed.setDescription(
-              `${client.error} I cannot delete messages that are more than 13 days old.`
+              `${client.error} I cannot delete messages that are more than 13 days old.`,
             ),
           ],
           ephemeral: true,
@@ -119,7 +121,7 @@ module.exports = {
         embeds: [
           errorEmbed
             .setDescription(
-              `${client.success} Deleted ${purged.size} messages!`
+              `${client.success} Deleted ${purged.size} messages!`,
             )
             .setColor("Green"),
         ],
@@ -141,7 +143,7 @@ module.exports = {
         return interaction.reply({
           embeds: [
             errorEmbed.setDescription(
-              `${client.error} I cannot delete messages that are more than 13 days old.`
+              `${client.error} I cannot delete messages that are more than 13 days old.`,
             ),
           ],
           ephemeral: true,
@@ -151,7 +153,7 @@ module.exports = {
         embeds: [
           errorEmbed
             .setDescription(
-              `${client.success} Deleted ${purged.size} messages from <@${target.id}>!`
+              `${client.success} Deleted ${purged.size} messages from <@${target.id}>!`,
             )
             .setColor("Green"),
         ],
