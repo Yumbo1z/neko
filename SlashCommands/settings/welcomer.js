@@ -4,7 +4,7 @@ const {
   ActionRowBuilder,
   PermissionFlagsBits,
 } = require("discord.js");
-const serverSchema = require("../../models/server");
+const serverSchema = require("../../models/serverData");
 const { disableButtons } = require("../../functions");
 let ms = require("ms");
 
