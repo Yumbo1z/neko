@@ -28,6 +28,13 @@ const serverData = mongoose.Schema({
     ticketRoles: Array,
     //categories: Array, // category: [{ title: string, role: string, modal: boolean, questions: array }]
   },
+  welcomer: {
+    channelForWelcome: String,
+    channelForLeaver: String,
+    welcomeMessage: String,
+    goodbyeMessage: String,
+    delete_reply: Number,
+  },
 });
 
 module.exports = mongoose.model("serverData", serverData);
