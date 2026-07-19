@@ -12,8 +12,8 @@ module.exports = {
   data: {
     name: "welcomer",
     description: "Configure welcomer in your server.",
-    default_member_permissions: PermissionFlagsBits.ManageChannels,
-    botPerms: ["ManageChannels"],
+    default_member_permissions: PermissionFlagsBits.ManageChannels.toString(),
+    integration_types: [0],
     options: [
       {
         name: "type",

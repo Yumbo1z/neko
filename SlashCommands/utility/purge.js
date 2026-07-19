@@ -7,10 +7,10 @@ const {
 module.exports = {
   data: {
     name: "purge",
-    default_member_permissions: PermissionFlagsBits.ManageMessages,
-    //dm_permission: false,
-    botPerms: ["ManageMessages"],
     description: "Delete a number of messages from a user or channel.",
+    default_member_permissions: PermissionFlagsBits.ManageMessages.toString(),
+    integration_types: [0],
+    //dm_permission: false,
     options: [
       {
         name: "amount",
