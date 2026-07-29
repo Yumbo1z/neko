@@ -86,9 +86,7 @@ module.exports = {
       server.welcomer.welcomeMessage = message;
 
       await interaction.reply({
-        content: `${
-          client.success
-        } Welcome message has been edited/configured.\n\n**DEMO:** ${await editWelcomerMessage(
+        content: `The Welcome message has been edited/configured.\n\n**DEMO:** ${await editWelcomerMessage(
           message,
           interaction.member,
         )}`,
@@ -106,9 +104,7 @@ module.exports = {
       server.welcomer.goodbyeMessage = message;
 
       await interaction.reply({
-        content: `${
-          client.success
-        } Goodbye message has been edited/configured.\n\n**DEMO:** ${await editWelcomerMessage(
+        content: `The Goodbye message has been edited/configured.\n\n**DEMO:** ${await editWelcomerMessage(
           message,
           interaction.member,
         )}`,
